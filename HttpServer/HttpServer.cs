@@ -8,39 +8,100 @@ using System.IO;
 
 namespace HttpServer
 {
-    internal class HttpServer
+    public class HttpServer
     {
-        public static void Run()
+        private readonly string _url;
+        private readonly HttpListener _listener;
+        private HttpListenerContext _httpContext;
+
+        public HttpServer(string url)
         {
-            HttpListener listener = new HttpListener();
-            // установка адресов прослушки
-            listener.Prefixes.Add("http://localhost:8888/connection/");
-            listener.Start();
+            _url = url;
+            _listener = new HttpListener();
+
+            _listener.Prefixes.Add(_url);
+        }
+
+        public void Start()
+        {
+            _listener.Start();
             Console.WriteLine("Ожидание подключений...");
 
-            // метод GetContext блокирует текущий поток, ожидая получение запроса 
-            HttpListenerContext context = listener.GetContext();
-            HttpListenerRequest request = context.Request;
+            Listener();
+        }
+        private void Listener()
+        {
+            try
+            {
+                while (true)
+                {
+                    // метод GetContext блокирует текущий поток, ожидая получение запроса 
+                    _httpContext = _listener.GetContext();
+                    HttpListenerRequest request = _httpContext.Request;
 
-            // получаем объект ответа
-            HttpListenerResponse response = context.Response;
+                    // получаем объект ответа
+                    HttpListenerResponse response = _httpContext.Response;
 
-            // создаем ответ в виде кода html
-            string responseStr = "<html><head><meta charset='utf8'></head><body>Привет мир!</body></html>";
-            byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseStr);
+                    FileStream fstream = File.OpenRead(@"C:\Users\gleb\Desktop\Прога\2КУРС\WEB\HttpServer\HttpServer\web\google.html");
+                    byte[] buffer = new byte[fstream.Length];
+                    // считываем данные
+                    fstream.Read(buffer, 0, buffer.Length);
+                    // получаем поток ответа и пишем в него ответ
+                    response.ContentLength64 = buffer.Length;
+                    Stream output = response.OutputStream;
+                    output.Write(buffer, 0, buffer.Length);
+                    // закрываем поток
+                    output.Close();
 
-            // получаем поток ответа и пишем в него ответ
-            response.ContentLength64 = buffer.Length;
-            Stream output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
+                }
+            }
+            //Если задаем неправильный путь к google.html, то нам выкидывает ошибку и мы можем выбрать команды. Иначе сервер работает бессконечно и ничего нового не происходит
+            //Не знаю как тут это колхозить без использования потоков(
 
-            // закрываем поток
-            output.Close();
+            catch (Exception FileNotFoundException)
+            {
+                Console.WriteLine(FileNotFoundException.Message);
+                Console.WriteLine("Server is dead :с. Commands: \"Stop\", \"Restart\", \"~/google/\" ");
 
-            // останавливаем прослушивание подключений
-            listener.Stop();
+                switch (Console.ReadLine())
+                {
+                    case "Stop":
+                        Stop();
+                        break;
+                    case "Restart":
+                        {
+                            Stop();
+                            Start();
+                        }
+                        break;
+                    case "~/google/":
+                        {
+                            // метод GetContext блокирует текущий поток, ожидая получение запроса 
+                            _httpContext = _listener.GetContext();
+                            HttpListenerRequest request = _httpContext.Request;
+
+                            // получаем объект ответа
+                            HttpListenerResponse response = _httpContext.Response;
+
+                            FileStream fstream = File.OpenRead(@"C:\Users\gleb\Desktop\Прога\2КУРС\WEB\HttpServer\HttpServer\web\google.html");
+                            byte[] buffer = new byte[fstream.Length];
+                            // считываем данные
+                            fstream.Read(buffer, 0, buffer.Length);
+                            // получаем поток ответа и пишем в него ответ
+                            response.ContentLength64 = buffer.Length;
+                            Stream output = response.OutputStream;
+                            output.Write(buffer, 0, buffer.Length);
+                            // закрываем поток
+                            output.Close();
+                        }
+                        break;
+                }
+            }
+        }
+        public void Stop()
+        {
+            _listener.Stop();
             Console.WriteLine("Обработка подключений завершена");
-            Console.Read();
         }
     }
 }
