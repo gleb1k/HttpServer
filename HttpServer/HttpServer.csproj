@@ -11,4 +11,10 @@
     <Folder Include="web\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="web\google.html">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
