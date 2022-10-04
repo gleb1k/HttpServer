@@ -6,28 +6,48 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 
-namespace HttpServer
+namespace HttpServer 
 {
-    public class HttpServer
+    public class HttpServer : IDisposable
     {
-        private readonly string _url;
+        public ServerStatus Status = ServerStatus.Stop;
         private readonly HttpListener _listener;
+
         private HttpListenerContext _httpContext;
 
-        public HttpServer(string url)
+        private ServerSettings _serverSettings;
+        public HttpServer(int port,ServerSettings serverSettings)
         {
-            _url = url;
+            _serverSettings = serverSettings;
             _listener = new HttpListener();
-
-            _listener.Prefixes.Add(_url);
+            _listener.Prefixes.Add("http://localhost:"+serverSettings.Port+"\\");
         }
 
         public void Start()
         {
-            _listener.Start();
-            Console.WriteLine("Ожидание подключений...");
+            if (Status == ServerStatus.Start)
+            {
+                Console.WriteLine("Сервер уже запущен :с");
+            }
+            else
+            {
+                Console.WriteLine("Запуск сервера...");
+                _listener.Start();
+                Console.WriteLine("Ожидание подключений...");
+                Status = ServerStatus.Stop;
+            }
 
             Listener();
+        }
+        public void Stop()
+        {
+            if (Status == ServerStatus.Start)
+            {
+                _listener.Stop();
+                Console.WriteLine("Обработка подключений завершена");
+            }
+            else
+                Console.WriteLine("Сервер уже остановлен");
         }
         private void Listener()
         {
@@ -98,10 +118,11 @@ namespace HttpServer
                 }
             }
         }
-        public void Stop()
+       
+
+        public void Dispose()
         {
-            _listener.Stop();
-            Console.WriteLine("Обработка подключений завершена");
+            Stop();
         }
     }
 }
