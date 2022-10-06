@@ -1,16 +1,54 @@
 ﻿using System.Text;
 
-namespace MyApp 
+namespace HttpServer
 {
     internal class Program
     {
+        private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
-            //Гугл находится в HttpServer/bin/Debug/net6.0
+            var settings = new ServerSettings(7700, "\\site");
 
-            var httpserver = new HttpServer.HttpServer("http://localhost:8888/connection/");
-            httpserver.Start();
+            var httpserver = new HttpServer(settings);
+            using (httpserver)
+            {
+                httpserver.Start();
 
+                while (_appIsRunning)
+                {
+                    Handler(Console.ReadLine()?.ToLower(), httpserver);
+                }
+            }
         }
+        static void Handler(string command, HttpServer httpserver)
+        {
+            switch (command)
+            {
+                case "stop":
+                    httpserver.Stop();
+                    break;
+                case "start":
+                    httpserver.Start();
+                    break;
+                case "restart":
+                    if (httpserver.Status == ServerStatus.Stop)
+                    {
+                        httpserver.Start();
+                    }
+                    else
+                    {
+                        httpserver.Stop();
+                        httpserver.Start();
+                    }
+                    break;
+                case "status":
+                    Console.WriteLine(httpserver.Status);
+                    break;
+                case "exit":
+                    _appIsRunning = false;  
+                    break;
+            }
+        }
+
     }
 }

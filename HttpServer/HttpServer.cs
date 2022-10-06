@@ -6,120 +6,100 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 
-namespace HttpServer 
+namespace HttpServer
 {
     public class HttpServer : IDisposable
     {
         public ServerStatus Status = ServerStatus.Stop;
-        private readonly HttpListener _listener;
-
-        private HttpListenerContext _httpContext;
-
-        private ServerSettings _serverSettings;
-        public HttpServer(int port,ServerSettings serverSettings)
+        
+        public ServerSettings ServerSettings;
+        private readonly HttpListener _httpListener;
+        public HttpServer(ServerSettings serverSettings)
         {
-            _serverSettings = serverSettings;
-            _listener = new HttpListener();
-            _listener.Prefixes.Add("http://localhost:"+serverSettings.Port+"\\");
+            ServerSettings = serverSettings;
+            _httpListener = new HttpListener();
+            _httpListener.Prefixes.Add($"http://localhost:" + serverSettings.Port + "/");
         }
 
         public void Start()
         {
             if (Status == ServerStatus.Start)
             {
-                Console.WriteLine("Сервер уже запущен :с");
+                Console.WriteLine("Сервер уже запущен!");
             }
             else
             {
                 Console.WriteLine("Запуск сервера...");
-                _listener.Start();
+                _httpListener.Start();
                 Console.WriteLine("Ожидание подключений...");
-                Status = ServerStatus.Stop;
+                Status = ServerStatus.Start;
             }
 
-            Listener();
+            Listening();
         }
         public void Stop()
         {
             if (Status == ServerStatus.Start)
             {
-                _listener.Stop();
+                _httpListener.Stop();
                 Console.WriteLine("Обработка подключений завершена");
             }
             else
                 Console.WriteLine("Сервер уже остановлен");
         }
-        private void Listener()
+
+        private void Listening()
         {
-            try
+            _httpListener.BeginGetContext(new AsyncCallback(ListenerCallback), _httpListener);
+        }
+
+        private void ListenerCallback(IAsyncResult result)
+        {
+            if (_httpListener.IsListening)
             {
-                while (true)
+                var _httpContext = _httpListener.EndGetContext(result);
+
+                //объект ответа
+                var response = _httpContext.Response;
+
+                var request = _httpContext.Request;
+
+                if (Directory.Exists(Path.GetFullPath("site")))
                 {
-                    // метод GetContext блокирует текущий поток, ожидая получение запроса 
-                    _httpContext = _listener.GetContext();
-                    HttpListenerRequest request = _httpContext.Request;
+                    byte[] buffer;
+                    if (File.Exists("." + request.RawUrl))
+                    {
+                        buffer = File.ReadAllBytes("." + request.RawUrl);
+                        //получаем поток и записываем в него ответ
+                        response.ContentLength64 = buffer.Length;
 
-                    // получаем объект ответа
-                    HttpListenerResponse response = _httpContext.Response;
+                        Stream output = response.OutputStream;
+                        output.Write(buffer, 0, buffer.Length);
 
-                    FileStream fstream = File.OpenRead(@"C:\Users\gleb\Desktop\Прога\2КУРС\WEB\HttpServer\HttpServer\web\google.html");
-                    byte[] buffer = new byte[fstream.Length];
-                    // считываем данные
-                    fstream.Read(buffer, 0, buffer.Length);
-                    // получаем поток ответа и пишем в него ответ
-                    response.ContentLength64 = buffer.Length;
+                        //закрываем поток
+                        output.Close();
+                    }
+                    response.Close();
+
+                }
+                else
+                {
+                    response.Headers.Set("Content-Type", "text/plain");
+
+                    response.StatusCode = (int)HttpStatusCode.NotFound;
+                    string err = "404 - not found";
+
+                    byte[] buffer = Encoding.UTF8.GetBytes(err);
                     Stream output = response.OutputStream;
                     output.Write(buffer, 0, buffer.Length);
-                    // закрываем поток
+
+                    //закрываем поток
                     output.Close();
-
                 }
-            }
-            //Если задаем неправильный путь к google.html, то нам выкидывает ошибку и мы можем выбрать команды. Иначе сервер работает бессконечно и ничего нового не происходит
-            //Не знаю как тут это колхозить без использования потоков(
 
-            catch (Exception FileNotFoundException)
-            {
-                Console.WriteLine(FileNotFoundException.Message);
-                Console.WriteLine("Server is dead :с. Commands: \"Stop\", \"Restart\", \"~/google/\" ");
-
-                switch (Console.ReadLine())
-                {
-                    case "Stop":
-                        Stop();
-                        break;
-                    case "Restart":
-                        {
-                            Stop();
-                            Start();
-                        }
-                        break;
-                    case "~/google/":
-                        {
-                            // метод GetContext блокирует текущий поток, ожидая получение запроса 
-                            _httpContext = _listener.GetContext();
-                            HttpListenerRequest request = _httpContext.Request;
-
-                            // получаем объект ответа
-                            HttpListenerResponse response = _httpContext.Response;
-
-                            FileStream fstream = File.OpenRead(@"C:\Users\gleb\Desktop\Прога\2КУРС\WEB\HttpServer\HttpServer\web\google.html");
-                            byte[] buffer = new byte[fstream.Length];
-                            // считываем данные
-                            fstream.Read(buffer, 0, buffer.Length);
-                            // получаем поток ответа и пишем в него ответ
-                            response.ContentLength64 = buffer.Length;
-                            Stream output = response.OutputStream;
-                            output.Write(buffer, 0, buffer.Length);
-                            // закрываем поток
-                            output.Close();
-                        }
-                        break;
-                }
+                Listening();
             }
         }
-       
-
         public void Dispose()
         {
             Stop();
