@@ -20,7 +20,7 @@ namespace HttpServer
                 }
             }
         }
-        static void Handler(string command, HttpServer httpserver)
+        static async void Handler(string command, HttpServer httpserver)
         {
             switch (command)
             {
@@ -31,15 +31,8 @@ namespace HttpServer
                     httpserver.Start();
                     break;
                 case "restart":
-                    if (httpserver.Status == ServerStatus.Stop)
-                    {
-                        httpserver.Start();
-                    }
-                    else
-                    {
                         httpserver.Stop();
                         httpserver.Start();
-                    }
                     break;
                 case "status":
                     Console.WriteLine(httpserver.Status);

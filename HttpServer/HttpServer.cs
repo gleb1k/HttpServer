@@ -42,6 +42,7 @@ namespace HttpServer
             if (Status == ServerStatus.Start)
             {
                 _httpListener.Stop();
+                Status = ServerStatus.Stop;
                 Console.WriteLine("Обработка подключений завершена");
             }
             else
