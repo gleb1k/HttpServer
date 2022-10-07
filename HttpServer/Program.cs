@@ -31,14 +31,16 @@ namespace HttpServer
                     httpserver.Start();
                     break;
                 case "restart":
-                        httpserver.Stop();
-                        httpserver.Start();
+                    httpserver.Stop();
+                    //Костыль, иначе ничего не работает. как фиксить?
+                    Thread.Sleep(20);
+                    httpserver.Start();
                     break;
                 case "status":
                     Console.WriteLine(httpserver.Status);
                     break;
                 case "exit":
-                    _appIsRunning = false;  
+                    _appIsRunning = false;
                     break;
             }
         }
