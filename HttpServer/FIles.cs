@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace HttpServer
 {
-    public class FIles
+    public class Files
     {
-        public static byte[] GetFile(string rawUrl, HttpServer httpServer)
+        public static byte[] GetFile(string rawUrl)
         {
             byte[] buffer = null;
-            var filePath = httpServer.ServerSettings.Path + rawUrl;
+            var settings = ServerSettings.Deserialize();
+            var filePath = settings.Path + rawUrl;
 
             if (Directory.Exists(filePath))
             {
@@ -27,9 +29,7 @@ namespace HttpServer
                 //Файл
                 buffer = File.ReadAllBytes(filePath);
             }
-            return buffer;
-            
+            return buffer;    
         }
-
     }
 }

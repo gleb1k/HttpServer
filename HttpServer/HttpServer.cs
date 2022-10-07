@@ -12,13 +12,13 @@ namespace HttpServer
     {
         public ServerStatus Status = ServerStatus.Stop;
         
-        public ServerSettings ServerSettings;
+        private ServerSettings _serverSettings;
         private readonly HttpListener _httpListener;
-        public HttpServer(ServerSettings serverSettings)
+        public HttpServer()
         {
-            ServerSettings = serverSettings;
+            _serverSettings = ServerSettings.Deserialize();
             _httpListener = new HttpListener();
-            _httpListener.Prefixes.Add($"http://localhost:" + serverSettings.Port + "/");
+            _httpListener.Prefixes.Add($"http://localhost:" + _serverSettings.Port + "/");
         }
 
         public void Start()
@@ -65,38 +65,34 @@ namespace HttpServer
 
                 var request = _httpContext.Request;
 
-                if (Directory.Exists(Path.GetFullPath("site")))
+                byte[] buffer;
+
+                var rawurl = request.RawUrl;
+                var fasfs = _serverSettings.Path;
+                if (Directory.Exists(_serverSettings.Path))
                 {
-                    byte[] buffer;
-                    if (File.Exists("." + request.RawUrl))
+                    buffer = Files.GetFile(request.RawUrl.Replace("%20", " "));
+                    
+                    if (buffer == null)
                     {
-                        buffer = File.ReadAllBytes("." + request.RawUrl);
-                        //получаем поток и записываем в него ответ
-                        response.ContentLength64 = buffer.Length;
+                        response.Headers.Set("Content-Type", "text/plain");
 
-                        Stream output = response.OutputStream;
-                        output.Write(buffer, 0, buffer.Length);
-
-                        //закрываем поток
-                        output.Close();
+                        response.StatusCode = (int)HttpStatusCode.NotFound;
+                        string err = "404 - not found";
+                        buffer = Encoding.UTF8.GetBytes(err);
                     }
-                    response.Close();
-
                 }
                 else
                 {
-                    response.Headers.Set("Content-Type", "text/plain");
-
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    string err = "404 - not found";
-
-                    byte[] buffer = Encoding.UTF8.GetBytes(err);
-                    Stream output = response.OutputStream;
-                    output.Write(buffer, 0, buffer.Length);
-
-                    //закрываем поток
-                    output.Close();
+                    string err = $"Directory '{_serverSettings.Path}' doesn't found";
+                    buffer = Encoding.UTF8.GetBytes(err);
                 }
+
+                Stream output = response.OutputStream;
+                output.Write(buffer, 0, buffer.Length);
+
+                //закрываем поток
+                output.Close();
 
                 Listening();
             }

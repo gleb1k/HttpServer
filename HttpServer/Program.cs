@@ -7,9 +7,14 @@ namespace HttpServer
         private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
-            var settings = new ServerSettings(7700, "\\site");
+            //--Работа с найстройками сервера (сериализация и десериализация json)--
+            var settings = new ServerSettings();
+            settings.Serialize();
+            var settingsDeserialized = ServerSettings.Deserialize();
 
-            var httpserver = new HttpServer(settings);
+
+            //Запуск сервера
+            var httpserver = new HttpServer();
             using (httpserver)
             {
                 httpserver.Start();
@@ -32,8 +37,8 @@ namespace HttpServer
                     break;
                 case "restart":
                     httpserver.Stop();
-                    //Костыль, иначе ничего не работает. как фиксить?
-                    Thread.Sleep(20);
+                    //Без ожидания все падает. Не знаю как фиксить(
+                    Thread.Sleep(50);
                     httpserver.Start();
                     break;
                 case "status":
