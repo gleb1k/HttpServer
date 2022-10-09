@@ -100,9 +100,6 @@ namespace HttpServer
             }
             catch 
             {
-                //костыль
-                Console.WriteLine("костыль");
-                _httpListener.Stop();
             }
         }
         public void Dispose()

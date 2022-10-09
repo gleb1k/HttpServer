@@ -57,6 +57,7 @@ namespace HttpServer
                 ".gif" => "image/gif",
                 ".js" => "text/javascript",
                 ".css" => "text/css",
+                ".ico" => "image/x-icon",
                 _ => "text/plain",
             };
         }
