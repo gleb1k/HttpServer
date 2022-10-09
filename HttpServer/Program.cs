@@ -7,6 +7,8 @@ namespace HttpServer
         private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
+            var af = Directory.Exists("\\site\\index.html" );
+
             //--Работа с найстройками сервера (сериализация и десериализация json)--
             var settings = new ServerSettings();
             settings.Serialize();
@@ -25,7 +27,8 @@ namespace HttpServer
                 }
             }
         }
-        static async void Handler(string command, HttpServer httpserver)
+        //
+        static void Handler(string command, HttpServer httpserver)
         {
             switch (command)
             {
@@ -37,8 +40,6 @@ namespace HttpServer
                     break;
                 case "restart":
                     httpserver.Stop();
-                    //Без ожидания все падает. Не знаю как фиксить(
-                    Thread.Sleep(50);
                     httpserver.Start();
                     break;
                 case "status":

@@ -33,9 +33,17 @@ namespace HttpServer
         public static ServerSettings Deserialize()
         {
             //json deserialization
-            using (var fs = new FileStream(@"Settings.JSON", FileMode.OpenOrCreate))
+            try
             {
-                return JsonSerializer.Deserialize<ServerSettings>(fs);
+                using (var fs = new FileStream(@"Settings.JSON", FileMode.OpenOrCreate))
+                {
+                    return JsonSerializer.Deserialize<ServerSettings>(fs);
+                }
+            }
+            catch 
+            {
+                Console.WriteLine("Settings doesn't found");
+                return null;
             }
         }
     }

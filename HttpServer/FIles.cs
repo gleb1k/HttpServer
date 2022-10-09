@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 
 namespace HttpServer
@@ -12,8 +13,14 @@ namespace HttpServer
         public static byte[] GetFile(string rawUrl)
         {
             byte[] buffer = null;
-            var settings = ServerSettings.Deserialize();
-            var filePath = settings.Path + rawUrl;
+            string filePath;
+            //костыль
+            if (rawUrl.Contains("/site") == false)
+            {
+                filePath = "./site" + rawUrl;
+            }
+            else
+            filePath = "." + rawUrl;
 
             if (Directory.Exists(filePath))
             {
@@ -30,6 +37,28 @@ namespace HttpServer
                 buffer = File.ReadAllBytes(filePath);
             }
             return buffer;    
+        }
+
+        public static void GetExtension(ref HttpListenerResponse response, string path)
+        {
+            //каталог?
+            if (Directory.Exists(path))
+            {
+                path = path + "/index.html";
+            }
+
+                response.ContentType = Path.GetExtension(path) switch
+            {
+                ".html" => "text/html",
+                ".png" => "image/png",
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".svg" => "image/svg+xml",
+                ".gif" => "image/gif",
+                ".js" => "text/javascript",
+                ".css" => "text/css",
+                _ => "text/plain",
+            };
         }
     }
 }

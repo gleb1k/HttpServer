@@ -18,7 +18,6 @@ namespace HttpServer
         {
             _serverSettings = ServerSettings.Deserialize();
             _httpListener = new HttpListener();
-            _httpListener.Prefixes.Add($"http://localhost:" + _serverSettings.Port + "/");
         }
 
         public void Start()
@@ -30,6 +29,11 @@ namespace HttpServer
             else
             {
                 Console.WriteLine("Запуск сервера...");
+
+                _serverSettings = ServerSettings.Deserialize();
+                _httpListener.Prefixes.Clear();
+                _httpListener.Prefixes.Add($"http://localhost:" + _serverSettings.Port + "/");
+
                 _httpListener.Start();
                 Console.WriteLine("Ожидание подключений...");
                 Status = ServerStatus.Start;
@@ -56,45 +60,49 @@ namespace HttpServer
 
         private void ListenerCallback(IAsyncResult result)
         {
-            if (_httpListener.IsListening)
+            try
             {
-                var _httpContext = _httpListener.EndGetContext(result);
-
-                //объект ответа
-                var response = _httpContext.Response;
-
-                var request = _httpContext.Request;
-
-                byte[] buffer;
-
-                var rawurl = request.RawUrl;
-                var fasfs = _serverSettings.Path;
-                if (Directory.Exists(_serverSettings.Path))
+                if (_httpListener.IsListening)
                 {
-                    buffer = Files.GetFile(request.RawUrl.Replace("%20", " "));
-                    
+                    var context = _httpListener.EndGetContext(result);
+
+                    //объект ответа
+                    var response = context.Response;
+
+                    var request = context.Request;
+
+                    byte[] buffer;
+
+                    var rawurl = request.RawUrl;
+
+                    buffer = Files.GetFile(rawurl.Replace("%20", " "));
+
+                    //Задаю расширения для файлов
+                    Files.GetExtension(ref response, "." + rawurl);
+
+                    //Неправильно задан запрос / не найдена папка
                     if (buffer == null)
                     {
-                        response.Headers.Set("Content-Type", "text/plain");
-
-                        response.StatusCode = (int)HttpStatusCode.NotFound;
-                        string err = "404 - not found";
+                        response.Headers.Set("Content-Type", "text/html");
+                        response.StatusCode = 404;
+                        response.ContentEncoding = Encoding.UTF8;
+                        string err = "<h1>404<h1><h2>The resource can not be found.<h2>";
                         buffer = Encoding.UTF8.GetBytes(err);
                     }
+                    Stream output = response.OutputStream;
+                    output.Write(buffer, 0, buffer.Length);
+
+                    //закрываем поток
+                    output.Close();
+
+                    Listening();
                 }
-                else
-                {
-                    string err = $"Directory '{_serverSettings.Path}' doesn't found";
-                    buffer = Encoding.UTF8.GetBytes(err);
-                }
-
-                Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-
-                //закрываем поток
-                output.Close();
-
-                Listening();
+            }
+            catch 
+            {
+                //костыль
+                Console.WriteLine("костыль");
+                _httpListener.Stop();
             }
         }
         public void Dispose()
