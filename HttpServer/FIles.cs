@@ -46,7 +46,6 @@ namespace HttpServer
             {
                 path = path + "/index.html";
             }
-
                 response.ContentType = Path.GetExtension(path) switch
             {
                 ".html" => "text/html",

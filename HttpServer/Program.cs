@@ -27,7 +27,6 @@ namespace HttpServer
                 }
             }
         }
-        //
         static void Handler(string command, HttpServer httpserver)
         {
             switch (command)
