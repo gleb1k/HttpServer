@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HttpServer.Attributes
 {
-    public class HttpPost: Attribute
+    public class HttpPOST: Attribute
     {
         public string MethodURI { get; set; }
-        public HttpPost(string methodURI)
+        public HttpPOST(string methodURI)
         {
             MethodURI = methodURI;
         }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using HttpServer.Controller;
+using System.Text;
 
 namespace HttpServer
 {
@@ -7,6 +8,8 @@ namespace HttpServer
         private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
+            
+
             var af = Directory.Exists("\\site\\index.html" );
 
             //--Работа с найстройками сервера (сериализация и десериализация json)--

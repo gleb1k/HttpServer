@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HttpServer.Attributes
 {
-    public class HttpContoller : Attribute
+    public class HttpController : Attribute
     {
         public string ControllerName { get; set; }
-        public HttpContoller(string controllerName)
+        public HttpController(string controllerName)
         {
             ControllerName = controllerName;
         }

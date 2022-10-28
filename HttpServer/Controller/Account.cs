@@ -10,13 +10,13 @@ namespace HttpServer.Controller
     
     public class Account
     {
-        public string Name { get; set; }
+        public string Login { get; set; }
         public string Password { get; set; }
         public int Id { get; set; }
-        public Account(int id, string name, string password)
+        public Account(int id, string login, string password)
         {
             Id = id;
-            Name = name;
+            Login = login;
             Password = password;
             
         }
