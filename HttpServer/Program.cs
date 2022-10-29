@@ -9,7 +9,6 @@ namespace HttpServer
         static void Main(string[] args)
         {
             
-
             var af = Directory.Exists("\\site\\index.html" );
 
             //--Работа с найстройками сервера (сериализация и десериализация json)--
