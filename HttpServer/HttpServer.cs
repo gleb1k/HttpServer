@@ -65,6 +65,8 @@ namespace HttpServer
                 //_httpListener.BeginGetContext(new AsyncCallback(ListenerCallback), _httpListener);
                 var context = await _httpListener.GetContextAsync();
 
+                
+
                 if (MethodHandler(context)) return;
 
                 StaticFiles(context.Response, context.Request);
@@ -151,27 +153,30 @@ namespace HttpServer
 
             object[] queryParams = null;
 
-            //object[] queryParams = method.GetParameters().Select(x => strParams[0] switch
-            //{
-            //    "getaccounts" => Convert.ChangeType(strParams[1], x.ParameterType)
-            //})
-
-            switch (methodURI)
+            if (request.HttpMethod == "POST")
             {
-                case "getaccounts":
-                    //параметров нет
-                    break;
-                case "getaccountbyid":
-                    object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
-                    queryParams = temp;
-                    break;
-                case "saveaccount":
-                    //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
-                    object[] temp1 = new object[2] { Convert.ToString(strParams[1]), Convert.ToString(strParams[2]) };
-                    queryParams = temp1;
-                    break;
-
+                ShowRequestData(request);
             }
+            else
+            {
+                switch (methodURI)
+                {
+                    case "getaccounts":
+                        //параметров нет
+                        break;
+                    case "getaccountbyid":
+                        object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
+                        queryParams = temp;
+                        break;
+                    case "saveaccount":
+                        //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
+                        object[] temp1 = new object[2] { Convert.ToString(strParams[1]), Convert.ToString(strParams[2]) };
+                        queryParams = temp1;
+                        break;
+
+                }
+            }
+
 
             var ret = method.Invoke(Activator.CreateInstance(controller), queryParams);
 
@@ -190,60 +195,36 @@ namespace HttpServer
             return true;
         }
 
-        //private bool MethodHandler(HttpListenerContext _httpContext)
-        //{
-        //    // объект запроса
-        //    HttpListenerRequest request = _httpContext.Request;
+        //метанит, прием данных с фронта (не работает)
+        public object[] ShowRequestData(HttpListenerRequest request)
+        {
+            if (!request.HasEntityBody)
+            {
+                Console.WriteLine("No client data was sent with the request.");
+                return null;
+            }
+            System.IO.Stream body = request.InputStream;
+            System.Text.Encoding encoding = request.ContentEncoding;
+            System.IO.StreamReader reader = new System.IO.StreamReader(body, encoding);
+            if (request.ContentType != null)
+            {
+                Console.WriteLine("Client data content type {0}", request.ContentType);
+            }
+            Console.WriteLine("Client data content length {0}", request.ContentLength64);
 
-        //    // объект ответа
-        //    HttpListenerResponse response = _httpContext.Response;
-
-        //    if (_httpContext.Request.Url.Segments.Length < 2) return false;
-
-        //    string controllerName = _httpContext.Request.Url.Segments[1].Replace("/", "");
-
-        //    string[] strParams = _httpContext.Request.Url
-        //                            .Segments
-        //                            .Skip(2)
-        //                            .Select(s => s.Replace("/", ""))
-        //                            .ToArray();
-
-        //    var assembly = Assembly.GetExecutingAssembly();
-
-        //    var controller = assembly.GetTypes().Where(t => Attribute.IsDefined(t, typeof(HttpController))).FirstOrDefault(c => c.Name.ToLower() == controllerName.ToLower());
-
-        //    if (controller == null) return false;
-
-        //    var test = controller.GetMethods();
-
-        //    var method = controller.GetMethods().Where(t => t.GetCustomAttributes(true)
-        //                                                      .Any(attr => attr.GetType().Name == $"Http{_httpContext.Request.HttpMethod}"))
-        //                                                      .FirstOrDefault();
-
-        //    if (method == null) return false;
-
-        //    object[] queryParams = method.GetParameters()
-        //                        .Select((p, i) => Convert.ChangeType(strParams[i], p.ParameterType))
-        //                        .ToArray();
-
-        //    //object
-        //    var ret = method.Invoke(Activator.CreateInstance(controller), queryParams);
+            Console.WriteLine("Start of client data:");
+            // Convert the data to a string and display it on the console.
+            string s = reader.ReadToEnd();
+            Console.WriteLine(s);
+            Console.WriteLine("End of client data:");
+            body.Close();
+            reader.Close();
+            object[] paramsA = null;
 
 
-        //    response.ContentType = "Application/json";
-
-        //    byte[] buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
-        //    response.ContentLength64 = buffer.Length;
-
-        //    Stream output = response.OutputStream;
-        //    output.Write(buffer, 0, buffer.Length);
-
-        //    output.Close();
-
-        //    Listening();
-
-        //    return true;
-        //}
+            // If you are finished with the request, it should be closed also.
+            return paramsA;
+        }
 
         //Закидывает текст ошибки в buffer и настраивает response
         private void Show404(ref HttpListenerResponse response, ref byte[] buffer)
