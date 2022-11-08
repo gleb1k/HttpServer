@@ -13,129 +13,40 @@ namespace HttpServer.Controller
     [HttpController("accounts")]
     public class Accounts
     {
+
+        private const string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
+
+        private static MyORM myORM = new MyORM(_connectionString);
+
         ////GetAccounts, GetAccountById и SaveAccount 
         [HttpGET("getaccountbyid")]
         public Account GetAccountById(int id)
         {
-
-            Account account = null;
-            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
-
-
-            string sqlExpression = "select * from [dbo].[Table]";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = command.ExecuteReader();
-
-                //если есть данные 
-                if (reader.HasRows)
-                {
-                    //Построчно считываем данные
-                    while (reader.Read())
-                    {
-                        if (reader.GetInt32(0) == id)
-                        {
-                            account = new Account
-                         (
-                                reader.GetInt32(0),
-                                reader.GetString(1),
-                                reader.GetString(2));
-                            break;
-                        }
-                    }
-                }
-                reader.Close();
-            }
-            return account;
+            return myORM.AddParameter("@id", id).ExecuteQuery<Account>("select * from [dbo].[Table] where Id=@id").FirstOrDefault();
         }
 
         [HttpGET("getaccounts")]
         public List<Account> GetAccounts()
         {
-            List<Account> accounts = new List<Account>();
-            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
-
-            string sqlExpression = "select * from [dbo].[Table]";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = command.ExecuteReader();
-
-                //если есть данные 
-                if (reader.HasRows)
-                {
-                    //Построчно считываем данные
-                    while (reader.Read())
-                    {
-                        accounts.Add(new Account
-                        (reader.GetInt32(0),
-                         reader.GetString(1),
-                         reader.GetString(2))
-                                );
-                    }
-                }
-                reader.Close();
-            }
-            return accounts;
+            return myORM.ExecuteQuery<Account>("select * from [dbo].[Table]").ToList();
         }
 
         [HttpPOST("saveaccount")]
-        public static async void SaveAccount(string login = "test3", string password = "test3")
-        {
-            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
-
-            // выражение SQL для добавления данных
-            string sqlExpression = "INSERT INTO [dbo].[Table] (Login, Password) VALUES (@login, @password)";
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                await connection.OpenAsync();
-
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-
-                // создаем параметр для логина
-                SqlParameter loginParam = new SqlParameter("@login", login);
-                // добавляем параметр к команде
-                command.Parameters.Add(loginParam);
-                // создаем параметр для пароля
-                SqlParameter passwordParam = new SqlParameter("@password", password);
-                // добавляем параметр к команде
-                command.Parameters.Add(passwordParam);
-
-                // записываем строку в бд
-                await command.ExecuteNonQueryAsync();
-            }
+        public static void SaveAccount(string login, string password)
+        {          
+            myORM.AddParameter("@Login", login)
+               .AddParameter("@Password", password).ExecuteNonQuery("insert into [dbo].[Table] values (@Login,@Password)");
         }
         [HttpPOST("login")]
-        public static bool LoginPOST(string login = "test3", string password = "test3")
+        public static bool LoginPOST(string login, string password)
         {
-            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
-
-            string sqlExpression = "select * from [dbo].[Table]";
-            using (var connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlDataReader reader = command.ExecuteReader();
-
-                //если есть данные 
-                if (reader.HasRows)
-                {
-                    //Построчно считываем данные
-                    while (reader.Read())
-                    {
-                        if (reader.GetString(1) == login && reader.GetString(2) == password)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                reader.Close();
-            }
-            return false;
+            int count = 0;
+            count += myORM.AddParameter("@login", login).AddParameter("@password", password)
+                .ExecuteNonQuery("select * from [dbo].[Table] where Login='@login' and Password='@password'");
+            if (count > 0)
+                return true;
+            else
+                return false;
         }
 
     }

@@ -20,5 +20,7 @@ namespace HttpServer.Controller
             Password = password;
             
         }
+        public Account() { }
+        
     }
 }

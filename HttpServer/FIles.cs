@@ -12,7 +12,7 @@ namespace HttpServer
     {
         public static byte[] GetFile(string rawUrl)
         {
-            byte[] buffer = null;
+            byte[]? buffer = null;
             string filePath;
             //костыль
             if (rawUrl.Contains("/site") == false)

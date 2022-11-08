@@ -87,7 +87,7 @@ namespace HttpServer
                 Files.GetExtension(ref response, "." + rawurl);
 
                 //Неправильно задан запрос / не найдена папка
-                if (buffer == null)
+                if (buffer != null)
                 {
                     Stream output = response.OutputStream;
                     output.Write(buffer, 0, buffer.Length);
