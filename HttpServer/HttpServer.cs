@@ -65,7 +65,7 @@ namespace HttpServer
                 //_httpListener.BeginGetContext(new AsyncCallback(ListenerCallback), _httpListener);
                 var context = await _httpListener.GetContextAsync();
 
-                
+
 
                 if (MethodHandler(context)) return;
 
@@ -89,15 +89,13 @@ namespace HttpServer
                 //Неправильно задан запрос / не найдена папка
                 if (buffer == null)
                 {
-                    Show404(ref response, ref buffer);
+                    Stream output = response.OutputStream;
+                    output.Write(buffer, 0, buffer.Length);
+                    //закрываем поток
+                    output.Close();
                 }
-
-                Stream output = response.OutputStream;
-                output.Write(buffer, 0, buffer.Length);
-
-                //закрываем поток
-                output.Close();
-
+                else
+                    Show404(ref response, ref buffer);
                 Listening();
             }
 
@@ -147,35 +145,25 @@ namespace HttpServer
                 "POST" => x.GetCustomAttribute<HttpPOST>()?.MethodURI == methodURI
             });
 
-            //object[] queryParams = method.GetParameters()
-            //                    .Select(p => Convert.ChangeType(strParams[1], p.ParameterType))
-            //                    .ToArray();
-
             object[] queryParams = null;
 
-            if (request.HttpMethod == "POST")
+            switch (methodURI)
             {
-                ShowRequestData(request);
+                case "getaccounts":
+                    //параметров нет
+                    break;
+                case "getaccountbyid":
+                    object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
+                    queryParams = temp;
+                    break;
+                case "saveaccount":
+                    ShowRequestData(request);
+                    //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
+                    object[] temp1 = new object[2] { Convert.ToString(strParams[1]), Convert.ToString(strParams[2]) };
+                    queryParams = temp1;
+                    break;
             }
-            else
-            {
-                switch (methodURI)
-                {
-                    case "getaccounts":
-                        //параметров нет
-                        break;
-                    case "getaccountbyid":
-                        object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
-                        queryParams = temp;
-                        break;
-                    case "saveaccount":
-                        //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
-                        object[] temp1 = new object[2] { Convert.ToString(strParams[1]), Convert.ToString(strParams[2]) };
-                        queryParams = temp1;
-                        break;
 
-                }
-            }
 
 
             var ret = method.Invoke(Activator.CreateInstance(controller), queryParams);
@@ -221,12 +209,11 @@ namespace HttpServer
             reader.Close();
             object[] paramsA = null;
 
-
             // If you are finished with the request, it should be closed also.
             return paramsA;
         }
 
-        //Закидывает текст ошибки в buffer и настраивает response
+        //Выводит ошибку
         private void Show404(ref HttpListenerResponse response, ref byte[] buffer)
         {
             response.Headers.Set("Content-Type", "text/html");
@@ -234,6 +221,10 @@ namespace HttpServer
             response.ContentEncoding = Encoding.UTF8;
             string err = "<h1>404<h1> <h2>The resource can not be found.<h2>";
             buffer = Encoding.UTF8.GetBytes(err);
+            Stream output = response.OutputStream;
+            output.Write(buffer, 0, buffer.Length);
+            //закрываем поток
+            output.Close();
         }
 
         public void Dispose()

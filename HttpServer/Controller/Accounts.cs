@@ -67,7 +67,6 @@ namespace HttpServer.Controller
                 //если есть данные 
                 if (reader.HasRows)
                 {
-
                     //Построчно считываем данные
                     while (reader.Read())
                     {
@@ -109,6 +108,34 @@ namespace HttpServer.Controller
                 // записываем строку в бд
                 await command.ExecuteNonQueryAsync();
             }
+        }
+        [HttpPOST("login")]
+        public static bool LoginPOST(string login = "test3", string password = "test3")
+        {
+            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
+
+            string sqlExpression = "select * from [dbo].[Table]";
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                //если есть данные 
+                if (reader.HasRows)
+                {
+                    //Построчно считываем данные
+                    while (reader.Read())
+                    {
+                        if (reader.GetString(1) == login && reader.GetString(2) == password)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                reader.Close();
+            }
+            return false;
         }
 
     }
