@@ -156,14 +156,11 @@ namespace HttpServer
                     queryParams = temp;
                     break;
                 case "saveaccount":
-                    ShowRequestData(request);
                     //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
-                    object[] temp1 = new object[2] { Convert.ToString(strParams[1]), Convert.ToString(strParams[2]) };
+                    object[] temp1 = GetRequestData(request);
                     queryParams = temp1;
                     break;
             }
-
-
 
             var ret = method.Invoke(Activator.CreateInstance(controller), queryParams);
 
@@ -181,9 +178,8 @@ namespace HttpServer
 
             return true;
         }
-
-        //метанит, прием данных с фронта (не работает)
-        public object[] ShowRequestData(HttpListenerRequest request)
+        //прием данных с полей логин и пароль
+        public string[] GetRequestData(HttpListenerRequest request)
         {
             if (!request.HasEntityBody)
             {
@@ -193,26 +189,19 @@ namespace HttpServer
             System.IO.Stream body = request.InputStream;
             System.Text.Encoding encoding = request.ContentEncoding;
             System.IO.StreamReader reader = new System.IO.StreamReader(body, encoding);
-            if (request.ContentType != null)
-            {
-                Console.WriteLine("Client data content type {0}", request.ContentType);
-            }
-            Console.WriteLine("Client data content length {0}", request.ContentLength64);
-
-            Console.WriteLine("Start of client data:");
-            // Convert the data to a string and display it on the console.
             string s = reader.ReadToEnd();
             Console.WriteLine(s);
-            Console.WriteLine("End of client data:");
             body.Close();
             reader.Close();
+
             var charLogin = s.ToCharArray().Skip(6).TakeWhile(item => item != '&').ToArray();
             string login = new string(charLogin);
-            var charPassword = s.SkipWhile(item => item != '&').Skip(7).TakeWhile(i => i != null).ToArray(); // ВЗЯТЬ ДО КОНЦА СТРКОИ
-            object[] paramsA = null;
 
-            // If you are finished with the request, it should be closed also.
-            return paramsA;
+            var charPassword = s.SkipWhile(item => item != '&').Skip(10).ToArray();
+            string password = new string(charPassword);
+
+            string[] strParams = new string[] { login, password};
+            return strParams;
         }
 
         //Выводит ошибку

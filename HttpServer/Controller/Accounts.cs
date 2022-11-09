@@ -18,7 +18,6 @@ namespace HttpServer.Controller
 
         private static MyORM myORM = new MyORM(_connectionString);
 
-        ////GetAccounts, GetAccountById и SaveAccount 
         [HttpGET("getaccountbyid")]
         public Account GetAccountById(int id)
         {
@@ -37,6 +36,7 @@ namespace HttpServer.Controller
             myORM.AddParameter("@Login", login)
                .AddParameter("@Password", password).ExecuteNonQuery("insert into [dbo].[Table] values (@Login,@Password)");
         }
+
         [HttpPOST("login")]
         public static bool LoginPOST(string login, string password)
         {
