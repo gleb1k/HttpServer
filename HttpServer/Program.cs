@@ -13,13 +13,6 @@ namespace HttpServer
             var result = new MyORM(connectionString).AddParameter("@Login", "aboba")
                 .AddParameter("Password", "12345678").ExecuteNonQuery("insert into [dbo].[Table] values (@Login,@Password)"); 
 
-
-
-
-
-
-
-
             var af = Directory.Exists("\\site\\index.html" );
 
             //--Работа с найстройками сервера (сериализация и десериализация json)--

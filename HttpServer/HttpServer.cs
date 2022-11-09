@@ -10,6 +10,7 @@ using System.Text.Json;
 using HttpServer.Attributes;
 using HttpServer.Controller;
 using Azure;
+using System.Net.Http;
 
 namespace HttpServer
 {
@@ -64,8 +65,6 @@ namespace HttpServer
             {
                 //_httpListener.BeginGetContext(new AsyncCallback(ListenerCallback), _httpListener);
                 var context = await _httpListener.GetContextAsync();
-
-
 
                 if (MethodHandler(context)) return;
 
@@ -207,6 +206,9 @@ namespace HttpServer
             Console.WriteLine("End of client data:");
             body.Close();
             reader.Close();
+            var charLogin = s.ToCharArray().Skip(6).TakeWhile(item => item != '&').ToArray();
+            string login = new string(charLogin);
+            var charPassword = s.SkipWhile(item => item != '&').Skip(7).TakeWhile(i => i != null).ToArray(); // ВЗЯТЬ ДО КОНЦА СТРКОИ
             object[] paramsA = null;
 
             // If you are finished with the request, it should be closed also.
