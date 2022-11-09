@@ -12,7 +12,7 @@ using HttpServer.Controller;
 using Azure;
 using System.Net.Http;
 
-namespace HttpServer
+namespace HttpServer.Server
 {
     public class HttpServer : IDisposable
     {
@@ -186,9 +186,9 @@ namespace HttpServer
                 Console.WriteLine("No client data was sent with the request.");
                 return null;
             }
-            System.IO.Stream body = request.InputStream;
-            System.Text.Encoding encoding = request.ContentEncoding;
-            System.IO.StreamReader reader = new System.IO.StreamReader(body, encoding);
+            Stream body = request.InputStream;
+            Encoding encoding = request.ContentEncoding;
+            StreamReader reader = new StreamReader(body, encoding);
             string s = reader.ReadToEnd();
             Console.WriteLine(s);
             body.Close();
@@ -200,7 +200,7 @@ namespace HttpServer
             var charPassword = s.SkipWhile(item => item != '&').Skip(10).ToArray();
             string password = new string(charPassword);
 
-            string[] strParams = new string[] { login, password};
+            string[] strParams = new string[] { login, password };
             return strParams;
         }
 

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer
+namespace HttpServer.Server
 {
     public class MyORM
     {
@@ -14,14 +14,14 @@ namespace HttpServer
         public IDbCommand _cmd = null;
         public MyORM(string connectionString)
         {
-            this._connection = new SqlConnection(connectionString);
-            this._cmd = _connection.CreateCommand();
+            _connection = new SqlConnection(connectionString);
+            _cmd = _connection.CreateCommand();
         }
         //Колво строк
         public int ExecuteNonQuery(string query)
         {
             int noOfAffectedRows = 0;
-            using(_connection)
+            using (_connection)
             {
                 _cmd!.CommandText = query;
                 _connection!.Open();
@@ -62,9 +62,9 @@ namespace HttpServer
             return list;
         }
         //Первый столбец первой попавшей строки
-        public T ExectureScalar<T> (string query)
+        public T ExectureScalar<T>(string query)
         {
-            T result = default(T);
+            T result = default;
             using (_connection)
             {
                 _cmd.CommandText = query;

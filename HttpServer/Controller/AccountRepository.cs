@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer
+namespace HttpServer.Controller
 {
-    public enum HttpReqests
+    public class AccountRepository
     {
-        POST,
-        GET
+
     }
 }

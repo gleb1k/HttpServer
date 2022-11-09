@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer
+namespace HttpServer.Server
 {
-    public enum ServerStatus
+    public enum HttpReqests
     {
-        Start,
-        Stop
+        POST,
+        GET
     }
 }

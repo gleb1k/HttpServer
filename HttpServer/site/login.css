@@ -1,0 +1,394 @@
+.page_content {
+    background: radial-gradient(rgba(24, 26, 33, 0) 0%, #181A21 100%) fixed no-repeat, url(image/main_background.jpg) center top no-repeat, #181A21;
+}
+
+/*login main part*/
+.page_content .login_container {
+    /*ВОТ ТУТ БЕСПОЛЕЗНЫЙ ОТСТУП КОТОРЫЙ ДЕЛАЕТ НИЖНЮЮ ПРОКРУТКУ, НО ВСЕ РУИНИТ*/
+    width: 100%;
+
+}
+
+.page_content .login {
+    padding-top: 80px;
+    padding-bottom: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page_content .header_and_main {
+    gap: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.page_content .login_header {
+    color: #fff;
+    font-size: 32px;
+    text-transform: uppercase;
+    letter-spacing: .055em;
+    font-weight: 200;
+    margin: 8px 20px;
+}
+
+.page_content .login_main_part_container {
+    background-color: #181a21;
+    border-radius: 4px;
+    padding: 24px 32px;
+    flex: 1;
+    min-width: 636px;
+}
+
+.page_content .login_main_part {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.page_content .login_form {
+    flex: 1;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;
+}
+
+.page_content .field1 {
+    display: grid;
+    grid-template-areas:
+        "label hint"
+        "input input";
+    grid-template-columns: 1fr min-content;
+    gap: 2px;
+}
+
+.page_content .field1 .text {
+    color: #1999ff;
+    font-weight: 500;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    user-select: none;
+}
+
+.page_content .field2 {
+    display: grid;
+    grid-template-areas:
+        "label hint"
+        "input input";
+    grid-template-columns: 1fr min-content;
+    gap: 2px;
+}
+
+.page_content .field2 .text {
+    font-size: 12px;
+    color: #afafaf;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    user-select: none;
+}
+
+.page_content input {
+    border-radius: 2px;
+    color: #fff;
+    padding: 10px;
+    background-color: #393c44;
+    ;
+    outline: none;
+    font-size: 15px;
+    grid-area: input;
+    border: 1px solid #32353c;
+}
+
+.page_content .enter_btn {
+    position: relative;
+    background: linear-gradient(90deg, #06BFFF 0%, #2D73FF 100%);
+    border-radius: 2px;
+    border: none;
+    outline: none;
+    padding: 12px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    font-family: inherit;
+    text-align: center;
+    letter-spacing: .03em;
+    cursor: pointer;
+    width: 270px;
+}
+
+.page_content .enter_btn_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page_content .checkbox_remember {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.page_content .checkbox_remember .field {
+    color: #afafaf;
+    font-size: 12px;
+    user-select: none;
+    padding-left: 6px;
+}
+
+.page_content .checkbox_remember .checkbox {
+    width: 14px;
+    height: 14px;
+    padding: 3px;
+    border-radius: 2px;
+    background-color: #32353c;
+    cursor: pointer;
+}
+
+.page_content .login_form .help {
+    color: #afafaf;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: center;
+}
+
+.page_content .login_function_container {
+    flex: 0;
+    display: grid;
+    gap: 4px;
+    margin-left: 24px;
+}
+
+.page_content .login_function {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 200px;
+}
+
+.page_content .login_function .function_tag {
+    color: #1999ff;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    margin: 6px 0px;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+
+.page_content .login_function .function_dialog .info {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #afafaf;
+    margin: 8px;
+}
+
+.page_content .login_function .function_dialog .qr {
+    width: 120px;
+    fill: #afafaf;
+}
+
+.page_content .login_function .function_dialog {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 0px
+}
+
+.page_content .login_function .more_info_btn {
+    background-color: rgba(255, 255, 255, .1);
+    border-radius: 2px;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    color: #fff;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+.page_content .login_function .show_qr {
+    text-align: center;
+    text-decoration-line: underline;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 24px;
+    color: #afafaf;
+    padding: 12px 1px;
+    cursor: pointer;
+}
+
+.page_content .login_form .btn_help_gap {
+    color: #c15755;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/*bottom row*/
+.page_content .login_bottom_row {
+    display: flex;
+    flex-direction: row;
+    padding-top: 48px;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+    width: 100%;
+    justify-content: center;
+    background-color: #181A21;
+}
+
+.page_content .login_bottom_row .learn_more_container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 200px;
+}
+
+.page_content .login_bottom_row .join_image {
+    width: 320px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 200px;
+}
+
+.page_content .login_bottom_row .join_btn_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.login_bottom_row .subtext {
+    font-size: 14px;
+    color: #b8b6b4;
+    line-height: 1.4;
+}
+
+.login_bottom_row a {
+    text-decoration: none;
+}
+
+.login_bottom_row .learn_more_link {
+    max-width: 60%;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+    color: #FFFFFF;
+}
+
+.join_container a {
+    margin: 20px 0 10px 0;
+    display: block;
+    text-align: center;
+    border-radius: 2px;
+    border: none;
+    padding: 1px;
+    display: inline-block;
+    cursor: pointer;
+    text-decoration: none !important;
+    color: #fff !important;
+    background: transparent;
+}
+
+.join_container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 200px;
+}
+
+.join_container .join_btn {
+    border-radius: 2px;
+    display: block;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+}
+
+.join_container .join_btn span {
+    padding: 0 15px;
+    font-size: 15px;
+    line-height: 30px;
+}
+
+@media screen and (max-width:911px) {
+    .page_content {
+        min-height: calc(100vh - 120px);
+    }
+
+    .page_content .login {
+        padding-top: 160px;
+    }
+
+    .page_content .login_bottom_row {
+        padding-bottom: 80px;
+    }
+}
+
+@media screen and (max-width:700px) {
+    .page_content .login {
+        padding-top: 12px;
+        padding-bottom: 0px;
+    }
+
+    .page_content .header_and_main {
+        position: relative;
+        margin-top: 70px;
+    }
+
+    .page_content .login_header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 8px 105px;
+    }
+
+    .page_content .login_main_part_container {
+        min-width: 0px;
+        background-color: transparent;
+    }
+
+    .page_content .login_main_part {
+        flex-direction: column;
+    }
+
+    .page_content .login_function_container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 0;
+        margin-top: 48px;
+    }
+
+    .page_content .login_function {
+        align-items: center;
+    }
+
+    .page_content .login_function .qr {
+        display: none;
+    }
+
+    .page_content .login_function .info {
+        text-align: center;
+    }
+    .page_content {
+        background: radial-gradient(rgba(24, 26, 33, 0) 0%, #181A21 100%) fixed no-repeat, url(image/background2.jpg) center top no-repeat, #181A21;
+    }
+    .page_content .login_bottom_row{
+        flex-direction: column-reverse;
+    }
+}

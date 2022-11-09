@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
-namespace HttpServer
+namespace HttpServer.Server
 {
     public class ServerSettings
     {
@@ -40,7 +40,7 @@ namespace HttpServer
                     return JsonSerializer.Deserialize<ServerSettings>(fs);
                 }
             }
-            catch 
+            catch
             {
                 Console.WriteLine("Settings doesn't found");
                 return null;

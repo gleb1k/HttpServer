@@ -1,5 +1,6 @@
 ﻿using HttpServer.Controller;
 using System.Text;
+using HttpServer.Server;
 
 namespace HttpServer
 {
@@ -15,7 +16,7 @@ namespace HttpServer
             //var settingsDeserialized = ServerSettings.Deserialize();
 
             //Запуск сервера
-            var httpserver = new HttpServer();
+            var httpserver = new Server.HttpServer();
             using (httpserver)
             {
                 httpserver.Start();
@@ -26,7 +27,7 @@ namespace HttpServer
                 }
             }
         }
-        static void Handler(string command, HttpServer httpserver)
+        static void Handler(string command, Server.HttpServer httpserver)
         {
             switch (command)
             {
