@@ -16,7 +16,7 @@ namespace HttpServer
             //var settingsDeserialized = ServerSettings.Deserialize();
 
             //Запуск сервера
-            var httpserver = new Server.HttpServer();
+            var httpserver = new HttpServer();
             using (httpserver)
             {
                 httpserver.Start();
@@ -27,7 +27,7 @@ namespace HttpServer
                 }
             }
         }
-        static void Handler(string command, Server.HttpServer httpserver)
+        static void Handler(string command, HttpServer httpserver)
         {
             switch (command)
             {

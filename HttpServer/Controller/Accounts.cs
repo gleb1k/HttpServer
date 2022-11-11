@@ -13,7 +13,6 @@ namespace HttpServer.Controller
     [HttpController("accounts")]
     public class Accounts
     {
-
         private const string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
 
         [HttpGET("getaccountbyid")]
@@ -26,16 +25,13 @@ namespace HttpServer.Controller
         [HttpGET("getaccounts")]
         public List<Account> GetAccounts()
         {
-            var myORM = new MyORM(_connectionString);
-            return myORM.ExecuteQuery<Account>("select * from [dbo].[Table]").ToList();
+            return AccountDAO.GetAll();
         }
 
         [HttpPOST("saveaccount")]
         public static void SaveAccount(string login, string password)
         {
-            var myORM = new MyORM(_connectionString);
-            myORM.AddParameter("@Login", login)
-               .AddParameter("@Password", password).ExecuteNonQuery("insert into [dbo].[Table] values (@Login,@Password)");
+            AccountDAO.Create(login, password);
         }
 
         [HttpPOST("login")]

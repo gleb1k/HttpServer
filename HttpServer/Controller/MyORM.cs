@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer.Server
+namespace HttpServer.Controller
 {
     public class MyORM
     {
@@ -71,7 +71,6 @@ namespace HttpServer.Server
                 _connection.Open();
                 result = (T)_cmd.ExecuteScalar();
             }
-
             return result;
         }
     }
