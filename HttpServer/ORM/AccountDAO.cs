@@ -1,11 +1,12 @@
-﻿using HttpServer.Server;
+﻿using HttpServer.Controller;
+using HttpServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer.Controller
+namespace HttpServer.ORM
 {
     public class AccountDAO
     {
@@ -15,6 +16,7 @@ namespace HttpServer.Controller
             var myORM = new MyORM(_connectionString);
             return myORM.ExecuteQuery<Account>("select * from [dbo].[Table]").ToList();
         }
+
         public static Account GetEntityById(int id)
         {
             var myORM = new MyORM(_connectionString);
@@ -28,7 +30,7 @@ namespace HttpServer.Controller
                 ("UPDATE [dbo].[Table] SET Password = @Password" +
                 "\r\nFROM" +
                 "\r\n(SELECT * FROM [dbo].[Table] WHERE Login=@Login) AS Selected" +
-                "\r\nWHERE [dbo].[Table].Id = Selected.Id"); 
+                "\r\nWHERE [dbo].[Table].Id = Selected.Id");
 
             return myORM.ExecuteQuery<Account>("select * from [dbo].[Table] where Login=@Login").FirstOrDefault();
         }

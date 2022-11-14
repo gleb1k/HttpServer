@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HttpServer.Attributes;
+using HttpServer.ORM;
 
 namespace HttpServer.Controller
 {
     
-    public class Account
+    public class Account : EntityBase
     {
         public string Login { get; set; }
         public string Password { get; set; }

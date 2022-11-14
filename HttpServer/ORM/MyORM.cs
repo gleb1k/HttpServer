@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer.Controller
+namespace HttpServer.ORM
 {
     public class MyORM
     {
@@ -39,6 +39,7 @@ namespace HttpServer.Controller
             return this;
         }
         //Много штук
+
         public IEnumerable<T> ExecuteQuery<T>(string query)
         {
             IList<T> list = new List<T>();
@@ -61,6 +62,32 @@ namespace HttpServer.Controller
             }
             return list;
         }
+        public IEnumerable<T> Select<T>()
+        {
+            IList<T> list = new List<T>();
+            Type t = typeof(T);
+
+            using (_connection)
+            {
+                //НУЖНО ЧТОБ ТАБЛИЦА НАЗЫВАЛАСЬ Accounts (иначе не робит)
+                string sqlExpression = $"SELECT * FROM {t.Name}s";
+
+                _cmd.CommandText = sqlExpression;
+
+                _connection.Open();
+                var reader = _cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    T obj = (T)Activator.CreateInstance(t);
+                    t.GetProperties().ToList().ForEach(x =>
+                    x.SetValue(obj, reader[x.Name]));
+
+                    list.Add(obj);
+                }
+            }
+            return list;
+        }
+
         //Первый столбец первой попавшей строки
         public T ExectureScalar<T>(string query)
         {

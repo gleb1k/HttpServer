@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HttpServer.Controller
+namespace HttpServer.ORM
 {
-    public class AccountRepository
+    public abstract class EntityBase
     {
-
+        public int Id { get; set; }
     }
 }
