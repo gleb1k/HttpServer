@@ -179,7 +179,7 @@ namespace HttpServer
 
             return true;
         }
-        //прием данных с полей логин и пароль
+        //прием данных с полей логин и пароль (ретурнуть словарь)
         public string[] GetRequestData(HttpListenerRequest request)
         {
             if (!request.HasEntityBody)
