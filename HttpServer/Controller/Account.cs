@@ -9,11 +9,11 @@ using HttpServer.ORM;
 namespace HttpServer.Controller
 {
     
-    public class Account : EntityBase
+    public class Account 
     {
+        public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public int Id { get; set; }
         public Account(int id, string login, string password)
         {
             Id = id;

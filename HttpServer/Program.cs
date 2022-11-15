@@ -1,14 +1,19 @@
 ﻿using HttpServer.Controller;
 using System.Text;
 using HttpServer.Server;
+using HttpServer.ORM;
 
 namespace HttpServer
 {
     internal class Program
     {
+       
         private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
+            var myorm = new MyORM(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True");
+            //var list = myorm.Select<Account>();
+            myorm.Insert<Account>(new Account(33, "loginaboba", "passwordaboba"));
 
             ////--Работа с найстройками сервера (сериализация и десериализация json)--
             //var settings = new ServerSettings();

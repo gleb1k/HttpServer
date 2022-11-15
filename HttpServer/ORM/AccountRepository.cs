@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HttpServer.ORM
 {
-    public class AccountRepository<T> : IRepository<T>
+    public class AccountRepository<T> : IRepository<T> where T : EntityBase
     {
 
         public void Create(T entity)

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace HttpServer.ORM
 {
@@ -12,6 +13,7 @@ namespace HttpServer.ORM
     {
         public IDbConnection _connection = null;
         public IDbCommand _cmd = null;
+        
         public MyORM(string connectionString)
         {
             _connection = new SqlConnection(connectionString);
@@ -62,6 +64,7 @@ namespace HttpServer.ORM
             }
             return list;
         }
+        //Правильный селект
         public IEnumerable<T> Select<T>()
         {
             IList<T> list = new List<T>();
@@ -99,6 +102,25 @@ namespace HttpServer.ORM
                 result = (T)_cmd.ExecuteScalar();
             }
             return result;
+        }
+        public void Insert<T>(T entity)
+        {
+            var args = typeof(T).GetProperties();
+            var values = args.Select(value => $"@{value.GetValue(entity)}").ToArray();
+
+            var argsAsValues = args.Select(value => $"@{value.ToString().Split(" ")[1]}").ToArray();
+            foreach (var parameter in args)
+            {
+                var sqlParameter = new SqlParameter($"@{parameter.Name}", parameter.GetValue(entity));
+                _cmd.Parameters.Add(sqlParameter);
+            }
+
+            string temp = string.Join(", ", argsAsValues);
+            string nonQuery = $"SET IDENTITY_INSERT {typeof(T).Name}s ON " +
+            $"INSERT INTO {typeof(T).Name}s VALUES ({string.Join(", ", argsAsValues)}) " +
+            $"SET IDENTITY_INSERT {typeof(T).Name} OFF";
+
+            ExecuteNonQuery(nonQuery);
         }
     }
 }

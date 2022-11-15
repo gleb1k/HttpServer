@@ -1,5 +1,6 @@
 ﻿using HttpServer.Controller;
 using HttpServer.Server;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace HttpServer.ORM
         {
             var myORM = new MyORM(_connectionString);
             myORM.AddParameter("@Id", id).ExecuteQuery<Account>("UPDATE [dbo].[Table] SET Login = 'updated'\r\nFROM\r\n(SELECT * FROM [dbo].[Table] WHERE ID='@Id') AS Selected\r\nWHERE [dbo].[Table].Id = Selected.Id");
-            //todo
+            //TODO
             return false;
         }
         public static bool Create(string login, string password)
@@ -46,15 +47,16 @@ namespace HttpServer.ORM
             var myORM = new MyORM(_connectionString);
             int count = 0;
             count += myORM.AddParameter("@login", login).AddParameter("@password", password)
-                .ExecuteNonQuery("select * from [dbo].[Table] where Login=@login and Password=@password");
+                .ExecuteNonQuery("select * from [dbo].[Accounts] where Login=@login and Password=@password");
             if (count > 0)
             {
                 myORM.AddParameter("@Login", login)
-                   .AddParameter("@Password", password).ExecuteNonQuery("insert into [dbo].[Table] values (@Login,@Password)");
+                   .AddParameter("@Password", password).ExecuteNonQuery("insert into [dbo].[Accounts] values (@Login,@Password)");
                 return true;
             }
             else
                 return false;
         }
+        
     }
 }

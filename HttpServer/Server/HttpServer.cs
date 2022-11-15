@@ -147,33 +147,59 @@ namespace HttpServer
 
             object[] queryParams = null;
 
-            switch (methodURI)
+            object[] queryParams2 = strParams.Skip(1).Select(x => (object)x).ToArray();
+
+            if (_httpContext.Request.HttpMethod.Equals(HttpReqests.GET))
             {
-                case "getaccounts":
-                    //параметров нет
-                    break;
-                case "getaccountbyid":
-                    object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
-                    queryParams = temp;
-                    break;
-                case "saveaccount":
-                    //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
-                    object[] temp1 = GetRequestData(request);
-                    queryParams = temp1;
-                    break;
+                //GET
+                queryParams = strParams.Skip(1).Select(x => (object)x).ToArray();
+
+                var result = method.Invoke(Activator.CreateInstance(controller), queryParams2);
+
+                response.ContentType = "Application/json";
+
+                byte[] buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(result));
+                response.ContentLength64 = buffer.Length;
+
+                Stream output = response.OutputStream;
+                output.Write(buffer, 0, buffer.Length);
+
+                output.Close();
             }
+            else
+            {
+                //POST
+                queryParams = GetRequestData(request);
 
-            var ret = method.Invoke(Activator.CreateInstance(controller), queryParams);
 
-            response.ContentType = "Application/json";
 
-            byte[] buffer = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(ret));
-            response.ContentLength64 = buffer.Length;
+                response.Headers.Set("Content-Type", "text/html");
+                response.StatusCode = 201;
+                response.ContentEncoding = Encoding.UTF8;
 
-            Stream output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
+                string message = $"<h1>201<h1> <h2>{queryParams[0]} {queryParams[1]}<h2>";
+                var buffer = Encoding.UTF8.GetBytes(message);
 
-            output.Close();
+                Stream output = response.OutputStream;
+                output.Write(buffer, 0, buffer.Length);
+
+                output.Close();
+            }
+            //switch (methodURI)
+            //{
+            //    case "getaccounts":
+            //        //параметров нет
+            //        break;
+            //    case "getaccountbyid":
+            //        object[] temp = new object[1] { Convert.ToInt32(strParams[1]) };
+            //        queryParams = temp;
+            //        break;
+            //    case "saveaccount":
+            //        //колхоз, как красиво написать?? (чтобы не переименовывать переменную)
+            //        object[] temp1 = GetRequestData(request);
+            //        queryParams = temp1;
+            //        break;
+            //}
 
             Listening();
 
@@ -201,7 +227,7 @@ namespace HttpServer
             var charPassword = s.SkipWhile(item => item != '&').Skip(10).ToArray();
             string password = new string(charPassword);
 
-            string[] strParams = new string[] { login, password};
+            string[] strParams = new string[] { login, password };
             return strParams;
         }
 
