@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace HttpServer.ORM
 {
+    /// <summary>
+    /// НАПИСАНО ОЧЕНЬ КРИВО, НЕ ИСПОЛЬЗУЙТЕ ЭТО!!!
+    /// </summary>
     public class AccountDAO
     {
         private const string _connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True";
@@ -38,9 +41,16 @@ namespace HttpServer.ORM
         public static bool Delete(int id)
         {
             var myORM = new MyORM(_connectionString);
-            myORM.AddParameter("@Id", id).ExecuteQuery<Account>("UPDATE [dbo].[Table] SET Login = 'updated'\r\nFROM\r\n(SELECT * FROM [dbo].[Table] WHERE ID='@Id') AS Selected\r\nWHERE [dbo].[Table].Id = Selected.Id");
-            //TODO
-            return false;
+            int count = 0;
+            string nonQuery = $"DELETE FROM Accounts " +
+                $"WHERE Id = {id}";
+
+
+            count += myORM.ExecuteNonQuery(nonQuery);
+            if (count > 0)
+                return true;
+            else
+                return false;
         }
         public static bool Create(string login, string password)
         {
@@ -57,6 +67,6 @@ namespace HttpServer.ORM
             else
                 return false;
         }
-        
+
     }
 }

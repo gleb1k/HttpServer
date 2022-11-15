@@ -13,7 +13,7 @@ namespace HttpServer
         {
             var myorm = new MyORM(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True");
             //var list = myorm.Select<Account>();
-            myorm.Insert<Account>(new Account(33, "loginaboba", "passwordaboba"));
+            myorm.Delete<Account>(new Account(32, "loginnew", "passwordnew"));
 
             ////--Работа с найстройками сервера (сериализация и десериализация json)--
             //var settings = new ServerSettings();
