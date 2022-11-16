@@ -9,9 +9,8 @@ using HttpServer.ORM;
 namespace HttpServer.Controller
 {
     
-    public class Account 
+    public class Account : EntityBase
     {
-        public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public Account(int id, string login, string password)
