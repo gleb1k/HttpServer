@@ -74,12 +74,14 @@ namespace HttpServer
             while (_httpListener.IsListening)
             {
                 //_httpListener.BeginGetContext(new AsyncCallback(ListenerCallback), _httpListener);
-                var context = await _httpListener.GetContextAsync();
+                var context = await _httpListener.GetContextAsync();                
 
                 if (MethodHandler(context)) return;
 
 
                 StaticFiles(context.Response, context.Request);
+
+                Kr(context);
             }
 
         }
@@ -89,15 +91,19 @@ namespace HttpServer
             HttpListenerRequest request = _httpContext.Request;
             // объект ответа
             HttpListenerResponse response = _httpContext.Response;
-            var headers = request.Headers;
 
-            IEnumerable<string> headerValues = request.Headers.GetValues("MyCustomID");
-            var value1 = headerValues.FirstOrDefault();
-            var charArr = value1.ToCharArray();
+            var headers = request.Headers;
+            //@#!elephant=&.ha-ha  -  НЕ РАБОТАЕТ, ИНВАЛИДНЫЕ ЗНАЧЕНИЯ
+            headers["test"] = "абв"; //Добавляем значение в headers
+
+            IEnumerable<string> headerValues = request.Headers.GetValues("test");
+            var headerValue = headerValues.FirstOrDefault();
+            var charArr = headerValue.ToCharArray();
 
             var dict = MakeDict();
 
-            var newWord = new List<string>();
+            var newWordList = new List<string>();
+
             for (int i=0; i< charArr.Length; i++)
             {
                 if (dict.ContainsKey(charArr[i]))
@@ -106,7 +112,7 @@ namespace HttpServer
                     bool hasValue = dict.TryGetValue(charArr[i], out value);
                     if (hasValue)
                     {
-                        newWord.Add(value);
+                        newWordList.Add(value);
                     }
                     else
                     {
@@ -114,13 +120,59 @@ namespace HttpServer
                     }
                 }
             }
+            var newWord = string.Join("", newWordList);
 
-            headers.Add("@#!elephant=&.ha-ha", string.Join("", newWord));
+            newWord = Cesar(newWord, dict, 3);
+
+            headers.Add("resultMyVoid", newWord);
 
         }
-        private List<string> Cesar(List<string> old, int num)
+        private string Cesar(string str,Dictionary<char, string> dict, int bias)
         {
-            
+            int nomer; // Номер в алфавите
+            int d; // Смещение
+            string s; //Результат
+            int j; // Переменная для циклов
+
+            var massage = str.ToCharArray().Select(c => c.ToString()).ToArray(); ; // Превращаем строку в массив символов.
+
+            var temp = new List<string>();
+            foreach (var item in dict)
+            {
+                temp.Add(item.Value);
+            }
+            var alfavit = temp.ToArray();
+
+            //char[] alfavit = { 'а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я' };
+
+            // Перебираем каждый символ сообщения
+            for (int i = 0; i < massage.Length; i++)
+            {
+                // Ищем индекс буквы
+                for (j = 0; j < alfavit.Length; j++)
+                {
+                    if (massage[i] == alfavit[j])
+                    {
+                        break;
+                    }
+                }
+
+                if (j != 33) // Если j равно 33, значит символ не из алфавита
+                {
+                    nomer = j; // Индекс буквы
+                    d = nomer + bias; // Делаем смещение
+
+                    // Проверяем, чтобы не вышли за пределы алфавита
+                    if (d > 32)
+                    {
+                        d = d - 33;
+                    }
+
+                    massage[i] = alfavit[d]; // Меняем букву
+                }
+            }
+            s = string.Join("", massage); // Собираем символы обратно в строку.
+            return s;
         }
         private Dictionary<char,string> MakeDict()
         {
