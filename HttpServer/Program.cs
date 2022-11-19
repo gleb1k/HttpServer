@@ -11,9 +11,9 @@ namespace HttpServer
         private static bool _appIsRunning = true;
         static void Main(string[] args)
         {
-            var myorm = new MyORM(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True");
-            ////var list = myorm.Select<Account>();
-            myorm.Insert<Account>(new Account(343, "loginnew", "passwordnew"));
+            //var myorm = new MyORM(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=SteamDB;Integrated Security=True");
+            //////var list = myorm.Select<Account>();
+            //myorm.Insert<Account>(new Account(343, "loginnew", "passwordnew"));
 
             //var accRep = new AccountRepository<Account>();
 

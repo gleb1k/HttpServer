@@ -12,6 +12,8 @@ using HttpServer.Controller;
 using Azure;
 using System.Net.Http;
 using HttpServer.Server;
+using System.Net.Http.Headers;
+using System.Reflection.PortableExecutable;
 
 namespace HttpServer
 {
@@ -26,7 +28,14 @@ namespace HttpServer
             _serverSettings = ServerSettings.Deserialize();
             _httpListener = new HttpListener();
         }
-
+        //todo
+        //public HttpServer(string str)
+        //{
+        //    _serverSettings = ServerSettings.Deserialize();
+        //    _httpListener = new HttpListener();
+        //    var context = _httpListener.GetContext();
+        //    context.Response.Headers.Add("@#!elephant=&.ha-ha", str);
+        //}
         public void Start()
         {
             if (Status == ServerStatus.Start)
@@ -73,6 +82,89 @@ namespace HttpServer
                 StaticFiles(context.Response, context.Request);
             }
 
+        }
+        private void Kr(HttpListenerContext _httpContext)
+        {
+            // объект запроса
+            HttpListenerRequest request = _httpContext.Request;
+            // объект ответа
+            HttpListenerResponse response = _httpContext.Response;
+            var headers = request.Headers;
+
+            IEnumerable<string> headerValues = request.Headers.GetValues("MyCustomID");
+            var value1 = headerValues.FirstOrDefault();
+            var charArr = value1.ToCharArray();
+
+            var dict = MakeDict();
+
+            var newWord = new List<string>();
+            for (int i=0; i< charArr.Length; i++)
+            {
+                if (dict.ContainsKey(charArr[i]))
+                {
+                    string value;
+                    bool hasValue = dict.TryGetValue(charArr[i], out value);
+                    if (hasValue)
+                    {
+                        newWord.Add(value);
+                    }
+                    else
+                    {
+                        // do something when the value is not there
+                    }
+                }
+            }
+
+            headers.Add("@#!elephant=&.ha-ha", string.Join("", newWord));
+
+        }
+        private List<string> Cesar(List<string> old, int num)
+        {
+            
+        }
+        private Dictionary<char,string> MakeDict()
+        {
+            var dictionary = new Dictionary<char, string>();
+            dictionary.Add('а', "a");
+            dictionary.Add('б', "b");
+            dictionary.Add('в', "v");
+            dictionary.Add('г', "g");
+            dictionary.Add('д', "d");
+
+            dictionary.Add('е', "e");
+            dictionary.Add('ё', "yo");
+            dictionary.Add('ж', "j");
+            dictionary.Add('з', "z");
+            dictionary.Add('и', "i");
+
+            dictionary.Add('й', "j");
+            dictionary.Add('к', "k");
+            dictionary.Add('л', "l");
+            dictionary.Add('м', "m");
+            dictionary.Add('н', "n");
+
+            dictionary.Add('о', "o");
+            dictionary.Add('п', "p");
+            dictionary.Add('р', "r");
+            dictionary.Add('с', "s");
+            dictionary.Add('т', "t");
+
+            dictionary.Add('у', "u");
+            dictionary.Add('ф', "f");
+            dictionary.Add('х', "h");
+            dictionary.Add('ц', "ts");
+            dictionary.Add('ч', "ch");
+
+            dictionary.Add('ш', "sh");
+            dictionary.Add('щ', "csh");
+            dictionary.Add('ъ', "'");
+            dictionary.Add('ы', "bI");
+            dictionary.Add('ь', "'");
+
+            dictionary.Add('э', "e");
+            dictionary.Add('ю', "yu");
+            dictionary.Add('я', "ya");
+            return dictionary;
         }
         private void StaticFiles(HttpListenerResponse response, HttpListenerRequest request)
         {
