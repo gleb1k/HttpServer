@@ -69,6 +69,7 @@ namespace HttpServer
 
                 if (MethodHandler(context)) return;
 
+
                 StaticFiles(context.Response, context.Request);
             }
 
